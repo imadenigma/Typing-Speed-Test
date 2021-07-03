@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+            prefWidth="800.0" style="-fx-background-color: #222831; -fx-border-color: #8A8F5A; -fx-border-width: 4;"
+            xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+   <Line endX="692.7929077148438" endY="-7.62939453125E-6" layoutX="103.0" layoutY="65.0" startX="-100.0"
+         startY="-7.62939453125E-6" stroke="#c36767"/>
+   <Button fx:id="startButton" layoutX="328.0" layoutY="449.0" mnemonicParsing="false" prefHeight="68.0"
+           prefWidth="143.0" style="-jfx-button-type: RAISED;" text="Start"/>
+</AnchorPane>
