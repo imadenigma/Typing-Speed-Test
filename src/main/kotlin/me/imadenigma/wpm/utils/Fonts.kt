@@ -1,4 +1,4 @@
-package com.example.demo.utils
+package me.imadenigma.wpm.utils
 
 import javafx.scene.text.Font
 import java.io.File

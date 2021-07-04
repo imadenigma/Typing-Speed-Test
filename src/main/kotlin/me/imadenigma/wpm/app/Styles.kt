@@ -1,18 +1,19 @@
-package com.example.demo.app
+package me.imadenigma.wpm.app
 
-import com.example.demo.utils.Fonts
+import me.imadenigma.wpm.utils.Fonts
 import com.jfoenix.controls.JFXButton
 import javafx.application.Platform
 import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.FontWeight
+import kfoenix.JFXStylesheet
 import kfoenix.jfxbutton
 import tornadofx.*
 import java.io.File
 import java.io.FileInputStream
 
-class Styles : Stylesheet() {
+class Styles : JFXStylesheet() {
 
     companion object {
         val startButton by cssclass()
@@ -23,9 +24,10 @@ class Styles : Stylesheet() {
 
     init {
         startButton {
-            this.font = Fonts.font1
+            this.font = Font(Fonts.ocra.name, 25.0)
             backgroundColor.add(c("#635757"))
             this.textFill = c("#B56464")
+
         }
 
         slider {
