@@ -20,6 +20,7 @@ import javafx.scene.text.Font
 import javafx.stage.FileChooser
 import kfoenix.*
 import me.imadenigma.wpm.app.Styles
+import me.imadenigma.wpm.controllers.TestController
 import me.imadenigma.wpm.utils.Fonts
 import tornadofx.*
 import java.io.File
@@ -31,15 +32,11 @@ import kotlin.math.roundToInt
 
 class MainView : View("Typing Speed Tester") {
 
-    private val timeUnitProperty = SimpleObjectProperty<TimeUnit>(TimeUnit.MINUTES)
-    private val sliderProperty = SimpleIntegerProperty(1)
-    private val choices: MutableSet<Char> = mutableSetOf()
-    private val cpmProperty = SimpleBooleanProperty()
-    private val wpmProperty = SimpleBooleanProperty(true)
-    private val visualProperty = SimpleBooleanProperty()
-    private val hardProperty = SimpleBooleanProperty()
+
+    private val controller: TestController by inject()
     private val textProperty = SimpleStringProperty("")
-    private lateinit var selectedFiles: Array<File>
+
+
 
     override val root = anchorpane {
         this.background = Background(BackgroundFill(Color.web("#222831"), CornerRadii.EMPTY, Insets.EMPTY))
@@ -70,7 +67,7 @@ class MainView : View("Typing Speed Tester") {
                 backgroundColor.add(c("#222831"))
             }
             setOnMouseReleased {
-                sliderProperty.value = this.value.roundToInt()
+                controller.sliderProperty.value = this.value.roundToInt()
             }
         }
 
@@ -84,14 +81,14 @@ class MainView : View("Typing Speed Tester") {
                     TimeUnit.HOURS -> style { this.backgroundColor.add(Color.ORANGE) }
                     else -> style { this.backgroundColor.add(Color.YELLOWGREEN) }
                 }
-                timeUnitProperty.value = this.selectedItem
+                controller.timeUnitProperty.value = this.selectedItem
             }
             style {
                 this.backgroundColor.add(Color.YELLOWGREEN)
             }
         }
 
-        jfxcheckbox(wpmProperty, "WPM (Words Per Minute)") {
+        jfxcheckbox(controller.wpmProperty, "WPM (Words Per Minute)") {
             this.layoutX = 130.0
             this.layoutY = 190.0
             this.isSelected = true
@@ -103,7 +100,7 @@ class MainView : View("Typing Speed Tester") {
             }
         }
 
-        jfxcheckbox(cpmProperty, "CPM (Character Per Minute)") {
+        jfxcheckbox(controller.cpmProperty, "CPM (Character Per Minute)") {
             this.layoutX = 400.0
             this.layoutY = 190.0
             this.checkedColor = c("#00FF66")
@@ -113,12 +110,12 @@ class MainView : View("Typing Speed Tester") {
                 this.font = Font(15.0)
             }
             setOnMouseClicked {
-                if (!it.isConsumed) choices.add('c')
-                else choices.remove('c')
+                if (!it.isConsumed) controller.choices.add('c')
+                else controller.choices.remove('c')
             }
         }
 
-        jfxcheckbox(visualProperty, "Visual") {
+        jfxcheckbox(controller.visualProperty, "Visual") {
             this.layoutX = 315.0
             this.layoutY = 250.0
             this.checkedColor = c("#00FF66")
@@ -129,7 +126,7 @@ class MainView : View("Typing Speed Tester") {
             }
         }
 
-        jfxcheckbox(hardProperty, "Hard Test") {
+        jfxcheckbox(controller.hardProperty, "Hard Test") {
             this.layoutX = 315.0
             this.layoutY = 300.0
             this.checkedColor = c("#00FF66")
@@ -168,13 +165,8 @@ class MainView : View("Typing Speed Tester") {
             onHover {
                 if (it) textProperty.value = "Requires enabling visual\n* Texts gonna be random and not from yours\n* Duration will be 2 minutes\n* You can't complete if you commit a mistake !"
                 else textProperty.value = null
-
-
             }
-
-
         }
-
 
         label("Add more texts to use (for language reasons...)") {
             this.layoutX = 60.0
@@ -185,14 +177,14 @@ class MainView : View("Typing Speed Tester") {
 
         jfxbutton("Import") {
             this.layoutX = 585.0
-            this.layoutY = 370.0
+            this.layoutY = 373.0
             this.font = Font(Fonts.ocra.name, 15.0)
             this.textFill = c("#5869FF")
             style {
                 this.backgroundColor.add(c("#9F9E66"))
             }
             setOnAction {
-                selectedFiles = chooseFile("Choose Text File", arrayOf(FileChooser.ExtensionFilter("TEXT files", "*.txt", "*.rtf", "*.log"))).toTypedArray()
+                chooseFile("Choose Text File", arrayOf(FileChooser.ExtensionFilter("TEXT files", "*.txt", "*.rtf", "*.log"))).forEach { controller.importFile(it) }
             }
         }
 
@@ -205,7 +197,7 @@ class MainView : View("Typing Speed Tester") {
 
         jfxtextfield("", shortcutK) {
             this.layoutX = 470.0
-            this.layoutY = 408.0
+            this.layoutY = 411.0
             this.font = Font(Fonts.ocra.name, 28.0)
             this.focusColor = Color.LIGHTYELLOW
             style {
