@@ -2,33 +2,29 @@ package me.imadenigma.wpm.view
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXSlider
+import javafx.application.Platform
 import javafx.beans.property.*
-import javafx.event.EventType
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
-import javafx.scene.Cursor
+import javafx.scene.control.MenuItem
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyCombination
-import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Background
 import javafx.scene.layout.BackgroundFill
 import javafx.scene.layout.CornerRadii
 import javafx.scene.paint.Color
-import javafx.scene.shape.StrokeType
 import javafx.scene.text.Font
 import javafx.stage.FileChooser
 import kfoenix.*
+import me.imadenigma.wpm.app.MyApp
 import me.imadenigma.wpm.app.Styles
 import me.imadenigma.wpm.controllers.TestController
 import me.imadenigma.wpm.utils.Fonts
 import tornadofx.*
-import java.io.File
 import java.io.FileInputStream
-import java.lang.StringBuilder
 import java.util.concurrent.TimeUnit
-import javax.swing.KeyStroke
 import kotlin.math.roundToInt
+import kotlin.system.exitProcess
 
 class MainView : View("Typing Speed Tester") {
 
@@ -39,6 +35,24 @@ class MainView : View("Typing Speed Tester") {
 
 
     override val root = anchorpane {
+
+
+        MyApp.trayIcon.setApplicationTitle("Speed Typing Test")
+        val exitItem = MenuItem("Exit Speed Typing Tester").apply {
+            this.setOnAction { this@MainView.app.stop() ; exitProcess(0) }
+        }
+
+        val openItem = MenuItem("Open Speed Typing Tester").apply {
+            this.setOnAction { this@MainView.primaryStage.show() ; MyApp.trayIcon.hide() }
+
+
+        }
+
+        MyApp.trayIcon.insertMenuItem(openItem, 0)
+        MyApp.trayIcon.insertMenuItem(exitItem, 1)
+
+
+
         this.background = Background(BackgroundFill(Color.web("#222831"), CornerRadii.EMPTY, Insets.EMPTY))
 
         line(0.0, 70.0, 800.0, 70.0) {
@@ -92,11 +106,18 @@ class MainView : View("Typing Speed Tester") {
             this.layoutX = 130.0
             this.layoutY = 190.0
             this.isSelected = true
+            controller.choices.add('w')
             this.checkedColor = c("#00FF66")
             this.unCheckedColor = c("#E56363")
             style {
                 this.textFill = c("#5869FF")
                 this.font = Font(15.0)
+            }
+            setOnAction {
+                if (!this.isSelected) {
+                    controller.cpmProperty.set(true)
+                    controller.choices.remove('w')
+                }
             }
         }
 
@@ -105,14 +126,19 @@ class MainView : View("Typing Speed Tester") {
             this.layoutY = 190.0
             this.checkedColor = c("#00FF66")
             this.unCheckedColor = c("#E56363")
+            controller.choices.add('c')
             style {
                 this.textFill = c("#5869FF")
                 this.font = Font(15.0)
             }
-            setOnMouseClicked {
-                if (!it.isConsumed) controller.choices.add('c')
-                else controller.choices.remove('c')
+
+            setOnAction {
+                if (!this.isSelected) {
+                    controller.wpmProperty.set(true)
+                    controller.choices.remove('c')
+                }
             }
+
         }
 
         jfxcheckbox(controller.visualProperty, "Visual") {
@@ -146,7 +172,7 @@ class MainView : View("Typing Speed Tester") {
             }
         }
 
-        imageview(Image(FileInputStream("C:\\Users\\imadb\\IdeaProjects\\TornadoFX\\src\\main\\resources\\question.png"))) {
+        imageview(Image(FileInputStream("C:\\Users\\imadb\\IdeaProjects\\TornadoFX\\src\\main\\resources\\images\\question.png"))) {
             this.layoutX = 403.0
             this.layoutY = 257.0
             onHover {
@@ -159,7 +185,7 @@ class MainView : View("Typing Speed Tester") {
 
         }
 
-        imageview(Image(FileInputStream("C:\\Users\\imadb\\IdeaProjects\\TornadoFX\\src\\main\\resources\\question.png"))) {
+        imageview(Image(FileInputStream("C:\\Users\\imadb\\IdeaProjects\\TornadoFX\\src\\main\\resources\\images\\question.png"))) {
             this.layoutX = 435.0
             this.layoutY = 307.0
             onHover {
@@ -184,7 +210,13 @@ class MainView : View("Typing Speed Tester") {
                 this.backgroundColor.add(c("#9F9E66"))
             }
             setOnAction {
-                chooseFile("Choose Text File", arrayOf(FileChooser.ExtensionFilter("TEXT files", "*.txt", "*.rtf", "*.log"))).forEach { controller.importFile(it) }
+                chooseFile("Choose Text File", arrayOf(FileChooser.ExtensionFilter("TEXT files", "*.txt", "*.rtf", "*.log")))
+                        .forEach {
+                            controller.importFile(it)
+                            dialog("Info") {
+
+                            }
+                        }
             }
         }
 
@@ -237,6 +269,14 @@ class MainView : View("Typing Speed Tester") {
             layoutY = 490.0
             buttonType = JFXButton.ButtonType.RAISED
             addClass(Styles.startButton)
+
+            setOnAction {
+                controller.createQuiz()
+                Platform.setImplicitExit(false)
+                this@MainView.currentStage!!.hide()
+                MyApp.trayIcon.show()
+            }
+
         }
 
     }

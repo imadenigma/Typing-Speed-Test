@@ -3,6 +3,7 @@ package me.imadenigma.wpm.controllers
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
+import me.imadenigma.wpm.models.Quiz
 import me.imadenigma.wpm.utils.QuizType
 import me.imadenigma.wpm.utils.getCachePath
 import tornadofx.*
@@ -19,7 +20,8 @@ class TestController : Controller() {
     val visualProperty = SimpleBooleanProperty()
     val hardProperty = SimpleBooleanProperty()
 
-    lateinit var selectedFiles: Array<File>
+    lateinit var quiz: Quiz
+        private set
 
     fun createQuiz() {
         val duration = timeUnitProperty.get().toSeconds(sliderProperty.longValue())
@@ -30,6 +32,7 @@ class TestController : Controller() {
         }
         val isVisual = visualProperty.get()
         val isHardcoreMode = hardProperty.get()
+        quiz = Quiz(duration, type, isVisual, isHardcoreMode)
     }
 
     fun importFile(file: File) {

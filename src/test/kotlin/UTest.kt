@@ -5,7 +5,7 @@ import org.junit.jupiter.api.condition.OS
 class UTest {
 
     @Test
-    fun OsTest() {
+    fun `OS Test`() {
         println(System.getProperty("os.name"))
         println(PlatformUtil.isWindows())
         println(OS.WINDOWS.isCurrentOs)
